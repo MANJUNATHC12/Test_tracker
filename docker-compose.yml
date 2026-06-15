@@ -1,0 +1,51 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: testing_tracker
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: "Host=postgres;Database=testing_tracker;Username=postgres;Password=postgres"
+      Jwt__Key: "SuperSecretDevKey123!"
+      Jwt__Issuer: "TestingTracker"
+      Jwt__Audience: "TestingTrackerClients"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "5115:5115"
+    # use dotnet watch for hot reload during dev
+    command: dotnet watch run --urls http://0.0.0.0:5115
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    environment:
+      VITE_API_URL: "http://localhost:5115"
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    command: npm run dev -- --host
+
+volumes:
+  pgdata:
+    driver: local

@@ -1,0 +1,8 @@
+C:\Users\manjunath\testing-tracker\backend\obj\Debug\net8.0\TestingTracker.Api.csproj.AssemblyReference.cache
+C:\Users\manjunath\testing-tracker\backend\obj\Debug\net8.0\rpswa.dswa.cache.json
+C:\Users\manjunath\testing-tracker\backend\obj\Debug\net8.0\TestingTracker.Api.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\manjunath\testing-tracker\backend\obj\Debug\net8.0\TestingTracker.Api.AssemblyInfoInputs.cache
+C:\Users\manjunath\testing-tracker\backend\obj\Debug\net8.0\TestingTracker.Api.AssemblyInfo.cs
+C:\Users\manjunath\testing-tracker\backend\obj\Debug\net8.0\TestingTracker.Api.csproj.CoreCompileInputs.cache
+C:\Users\manjunath\testing-tracker\backend\obj\Debug\net8.0\TestingTracker.Api.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\manjunath\testing-tracker\backend\obj\Debug\net8.0\TestingTracker.Api.MvcApplicationPartsAssemblyInfo.cache
