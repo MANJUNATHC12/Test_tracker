@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="../build/TestingTracker.Api.props" />
+</Project>

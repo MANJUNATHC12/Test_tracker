@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "xOinn25cJnT2iJPnZGUMb4QBpawfNJ9O6ubMG5JcAK4=",
+  "Source": "TestingTracker.Api",
+  "BasePath": "_content/TestingTracker.Api",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

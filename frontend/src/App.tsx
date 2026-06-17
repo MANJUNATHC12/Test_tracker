@@ -1,60 +1,147 @@
-import React, { useEffect, useState } from 'react';
-
-interface DailyLog {
-  id: number;
-  date: string;
-  description: string;
-  hoursSpent: number;
-}
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5115'; // default .NET dev URL
+import { useState, useEffect } from 'react';
+import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
+import TestCases from './pages/TestCases';
+import Tasks from './pages/Tasks';
+import DailyLogs from './pages/DailyLogs';
+import Reports from './pages/Reports';
+import { LayoutDashboard, FolderGit2, CheckSquare, Clock, BarChart3, LogOut, User as UserIcon } from 'lucide-react';
 
 export default function App() {
-  const [logs, setLogs] = useState<DailyLog[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
+  const [username, setUsername] = useState<string | null>(localStorage.getItem('username'));
+  const [role, setRole] = useState<string | null>(localStorage.getItem('role'));
+  const [activeTab, setActiveTab] = useState<string>('dashboard');
 
-  const fetchLogs = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const resp = await fetch(`${API_URL}/api/DailyLogs`, {
-        headers: {
-          // JWT token would go here if you have auth set up
-        },
-      });
-      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-      const data = await resp.json();
-      setLogs(data);
-    } catch (e: any) {
-      setError(e.message);
-    } finally {
-      setLoading(false);
+  // Check if token exists on load
+  useEffect(() => {
+    const savedToken = localStorage.getItem('token');
+    const savedUser = localStorage.getItem('username');
+    const savedRole = localStorage.getItem('role');
+    if (savedToken) {
+      setToken(savedToken);
+      setUsername(savedUser);
+      setRole(savedRole);
+    }
+  }, []);
+
+  const handleLoginSuccess = (newToken: string, newUser: string, newRole: string) => {
+    localStorage.setItem('token', newToken);
+    localStorage.setItem('username', newUser);
+    localStorage.setItem('role', newRole);
+    setToken(newToken);
+    setUsername(newUser);
+    setRole(newRole);
+    setActiveTab('dashboard');
+  };
+
+  const handleLogout = () => {
+    localStorage.clear();
+    setToken(null);
+    setUsername(null);
+    setRole(null);
+  };
+
+  // If not logged in, render Login page
+  if (!token) {
+    return <Login onLoginSuccess={handleLoginSuccess} />;
+  }
+
+  // Render correct page view
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'dashboard':
+        return <Dashboard onNavigate={(tab) => setActiveTab(tab)} />;
+      case 'testcases':
+        return <TestCases />;
+      case 'tasks':
+        return <Tasks />;
+      case 'logs':
+        return <DailyLogs />;
+      case 'reports':
+        return <Reports />;
+      default:
+        return <Dashboard onNavigate={(tab) => setActiveTab(tab)} />;
     }
   };
 
-  useEffect(() => {
-    fetchLogs();
-  }, []);
-
   return (
-    <div className="p-4 max-w-3xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Testing Tracker – Daily Logs</h1>
-      {loading && <p>Loading logs...</p>}
-      {error && <p className="text-red-600">Error: {error}</p>}
-      <ul className="list-disc pl-5">
-        {logs.map((log) => (
-          <li key={log.id} className="mb-2">
-            <strong>{new Date(log.date).toLocaleDateString()}</strong>: {log.description} ({log.hoursSpent}h)
-          </li>
-        ))}
-      </ul>
-      <button
-        className="mt-4 px-4 py-2 bg-blue-600 text-white rounded"
-        onClick={fetchLogs}
-      >
-        Refresh
-      </button>
+    <div className="app-container">
+      {/* Sidebar Panel */}
+      <aside className="sidebar">
+        <div className="sidebar-brand">
+          <div className="brand-icon">T</div>
+          <span className="brand-name">Testing Tracker</span>
+        </div>
+
+        <nav className="sidebar-nav">
+          <a
+            href="#"
+            className={`nav-link ${activeTab === 'dashboard' ? 'active' : ''}`}
+            onClick={(e) => { e.preventDefault(); setActiveTab('dashboard'); }}
+          >
+            <LayoutDashboard size={18} />
+            Dashboard
+          </a>
+          <a
+            href="#"
+            className={`nav-link ${activeTab === 'testcases' ? 'active' : ''}`}
+            onClick={(e) => { e.preventDefault(); setActiveTab('testcases'); }}
+          >
+            <FolderGit2 size={18} />
+            Test Cases
+          </a>
+          <a
+            href="#"
+            className={`nav-link ${activeTab === 'tasks' ? 'active' : ''}`}
+            onClick={(e) => { e.preventDefault(); setActiveTab('tasks'); }}
+          >
+            <CheckSquare size={18} />
+            Tasks Checklist
+          </a>
+          <a
+            href="#"
+            className={`nav-link ${activeTab === 'logs' ? 'active' : ''}`}
+            onClick={(e) => { e.preventDefault(); setActiveTab('logs'); }}
+          >
+            <Clock size={18} />
+            Daily Logs
+          </a>
+          <a
+            href="#"
+            className={`nav-link ${activeTab === 'reports' ? 'active' : ''}`}
+            onClick={(e) => { e.preventDefault(); setActiveTab('reports'); }}
+          >
+            <BarChart3 size={18} />
+            Reports Engine
+          </a>
+        </nav>
+
+        {/* Profile Card at Sidebar Bottom */}
+        <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.5rem', backgroundColor: 'rgba(255,255,255,0.02)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+            <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: 'rgba(168,85,247,0.1)', color: 'var(--accent-purple)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <UserIcon size={16} />
+            </div>
+            <div style={{ overflow: 'hidden' }}>
+              <div style={{ fontWeight: 600, fontSize: '0.85rem', color: 'var(--text-primary)', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{username}</div>
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{role}</div>
+            </div>
+          </div>
+
+          <div className="sidebar-footer">
+            <button className="logout-button" onClick={handleLogout}>
+              <LogOut size={16} />
+              Sign Out
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      {/* Main Panel Viewport */}
+      <main className="main-content">
+        {renderContent()}
+      </main>
     </div>
   );
 }

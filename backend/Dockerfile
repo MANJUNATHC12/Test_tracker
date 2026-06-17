@@ -1,3 +1,12 @@
+# ---------- Development stage ----------
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS dev
+WORKDIR /app
+EXPOSE 5115
+ENV ASPNETCORE_URLS=http://+:5115
+ENV ASPNETCORE_ENVIRONMENT=Development
+COPY . .
+ENTRYPOINT ["dotnet", "watch", "run", "--urls", "http://0.0.0.0:5115"]
+
 # ---------- Build stage ----------
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
