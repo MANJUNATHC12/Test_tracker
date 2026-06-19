@@ -97,5 +97,37 @@ export const api = {
       throw new Error(msg);
     }
     return res.status === 204 ? null : res.json();
+  },
+  uploadFile: async (endpoint: string, file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    // For file uploads, we don't set Content-Type header so the browser sets the correct multipart boundary
+    const token = localStorage.getItem('token');
+    const headers: any = {};
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+
+    const res = await fetch(`${API_URL}/api/${endpoint}`, {
+      method: 'POST',
+      headers,
+      body: formData
+    });
+    
+    if (res.status === 401) {
+      localStorage.clear();
+      window.location.reload();
+    }
+    if (!res.ok) {
+      const text = await res.text();
+      let msg = `HTTP ${res.status}`;
+      try {
+        const errObj = JSON.parse(text);
+        msg = errObj.message || msg;
+      } catch {
+        msg = text || msg;
+      }
+      throw new Error(msg);
+    }
+    return res.json();
   }
 };

@@ -5,13 +5,27 @@ import TestCases from './pages/TestCases';
 import Tasks from './pages/Tasks';
 import DailyLogs from './pages/DailyLogs';
 import Reports from './pages/Reports';
-import { LayoutDashboard, FolderGit2, CheckSquare, Clock, BarChart3, LogOut, User as UserIcon } from 'lucide-react';
+import DataImport from './pages/DataImport';
+import { LayoutDashboard, FolderGit2, CheckSquare, Clock, BarChart3, UploadCloud, LogOut, User as UserIcon, Sun, Moon } from 'lucide-react';
 
 export default function App() {
   const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
   const [username, setUsername] = useState<string | null>(localStorage.getItem('username'));
   const [role, setRole] = useState<string | null>(localStorage.getItem('role'));
   const [activeTab, setActiveTab] = useState<string>('dashboard');
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    return (localStorage.getItem('theme') as 'light' | 'dark') || 'dark';
+  });
+
+  // Apply theme to body
+  useEffect(() => {
+    if (theme === 'light') {
+      document.body.classList.add('light-theme');
+    } else {
+      document.body.classList.remove('light-theme');
+    }
+    localStorage.setItem('theme', theme);
+  }, [theme]);
 
   // Check if token exists on load
   useEffect(() => {
@@ -60,6 +74,8 @@ export default function App() {
         return <DailyLogs />;
       case 'reports':
         return <Reports />;
+      case 'import':
+        return <DataImport />;
       default:
         return <Dashboard onNavigate={(tab) => setActiveTab(tab)} />;
     }
@@ -115,6 +131,14 @@ export default function App() {
             <BarChart3 size={18} />
             Reports Engine
           </a>
+          <a
+            href="#"
+            className={`nav-link ${activeTab === 'import' ? 'active' : ''}`}
+            onClick={(e) => { e.preventDefault(); setActiveTab('import'); }}
+          >
+            <UploadCloud size={18} />
+            Data Import
+          </a>
         </nav>
 
         {/* Profile Card at Sidebar Bottom */}
@@ -129,10 +153,18 @@ export default function App() {
             </div>
           </div>
 
-          <div className="sidebar-footer">
-            <button className="logout-button" onClick={handleLogout}>
+          <div className="sidebar-footer" style={{ display: 'flex', gap: '0.5rem' }}>
+            <button className="logout-button" style={{ flex: 1, justifyContent: 'center' }} onClick={handleLogout}>
               <LogOut size={16} />
               Sign Out
+            </button>
+            <button 
+              className="btn-icon-only" 
+              style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid var(--border-color)' }}
+              onClick={() => setTheme(t => t === 'dark' ? 'light' : 'dark')}
+              title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+            >
+              {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
             </button>
           </div>
         </div>

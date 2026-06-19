@@ -99,7 +99,7 @@ function HBar({ label, value, max, color, icon }: { label: string; value: number
           <span style={{ color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label}</span>
           <span style={{ fontWeight: 600, color: 'var(--text-primary)', flexShrink: 0, marginLeft: '0.5rem' }}>{value}</span>
         </div>
-        <div style={{ width: '100%', height: '6px', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '3px', overflow: 'hidden' }}>
+        <div style={{ width: '100%', height: '6px', backgroundColor: 'var(--progress-bg)', borderRadius: '3px', overflow: 'hidden' }}>
           <div style={{
             width: `${pct}%`, height: '100%', borderRadius: '3px',
             background: `linear-gradient(90deg, ${color}, ${color}cc)`,
@@ -414,7 +414,7 @@ export default function Reports() {
                   return (
                     <div key={tm.name} style={{
                       display: 'flex', alignItems: 'center', gap: '1rem',
-                      padding: '0.85rem', backgroundColor: i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.01)',
+                      padding: '0.85rem', backgroundColor: i % 2 === 0 ? 'transparent' : 'var(--table-stripe)',
                       borderRadius: '8px', marginBottom: '0.25rem'
                     }}>
                       <div style={{
@@ -430,7 +430,7 @@ export default function Reports() {
                           <span style={{ fontWeight: 600, fontSize: '0.85rem', color: 'var(--text-primary)' }}>{tm.name}</span>
                           <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{tm.completed}/{tm.total} tasks</span>
                         </div>
-                        <div style={{ width: '100%', height: '6px', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '3px', overflow: 'hidden' }}>
+                        <div style={{ width: '100%', height: '6px', backgroundColor: 'var(--progress-bg)', borderRadius: '3px', overflow: 'hidden' }}>
                           <div style={{
                             width: `${tm.pct}%`, height: '100%', borderRadius: '3px',
                             background: `linear-gradient(90deg, ${CHART_COLORS[i % CHART_COLORS.length]}, ${CHART_COLORS[i % CHART_COLORS.length]}aa)`,
@@ -617,7 +617,7 @@ export default function Reports() {
                       {parsedData.TotalTasks > 0 ? Math.round((parsedData.CompletedTasks / parsedData.TotalTasks) * 100) : 0}%
                     </span>
                   </div>
-                  <div style={{ width: '100%', height: '8px', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '4px', overflow: 'hidden' }}>
+                  <div style={{ width: '100%', height: '8px', backgroundColor: 'var(--progress-bg)', borderRadius: '4px', overflow: 'hidden' }}>
                     <div style={{
                       width: `${parsedData.TotalTasks > 0 ? Math.round((parsedData.CompletedTasks / parsedData.TotalTasks) * 100) : 0}%`,
                       height: '100%', borderRadius: '4px',

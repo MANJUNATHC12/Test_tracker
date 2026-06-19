@@ -245,3 +245,10 @@ C:/Users/navee/Downloads/Manjunath/Testing_tarcker_project/Test_tracker/backend/
 /app/obj/Debug/net8.0/TestingTracker.Api.pdb
 /app/obj/Debug/net8.0/TestingTracker.Api.genruntimeconfig.cache
 /app/obj/Debug/net8.0/ref/TestingTracker.Api.dll
+/app/bin/Debug/net8.0/ClosedXML.dll
+/app/bin/Debug/net8.0/DocumentFormat.OpenXml.dll
+/app/bin/Debug/net8.0/ExcelNumberFormat.dll
+/app/bin/Debug/net8.0/Irony.dll
+/app/bin/Debug/net8.0/SixLabors.Fonts.dll
+/app/bin/Debug/net8.0/System.IO.Packaging.dll
+/app/bin/Debug/net8.0/XLParser.dll
