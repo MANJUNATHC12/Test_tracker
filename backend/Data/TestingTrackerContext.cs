@@ -15,5 +15,7 @@ namespace TestingTracker.Api.Data
         public DbSet<TaskItem> Tasks => Set<TaskItem>();
         public DbSet<Report> Reports => Set<Report>();
         public DbSet<User> Users => Set<User>();
+        public DbSet<Requirement> Requirements => Set<Requirement>();
+        public DbSet<Issue> Issues => Set<Issue>();
     }
 }

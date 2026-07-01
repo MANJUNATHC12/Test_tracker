@@ -6,7 +6,9 @@ import Tasks from './pages/Tasks';
 import DailyLogs from './pages/DailyLogs';
 import Reports from './pages/Reports';
 import DataImport from './pages/DataImport';
-import { LayoutDashboard, FolderGit2, CheckSquare, Clock, BarChart3, UploadCloud, LogOut, User as UserIcon, Sun, Moon } from 'lucide-react';
+import Requirements from './pages/Requirements';
+import Issues from './pages/Issues';
+import { LayoutDashboard, FolderGit2, CheckSquare, Clock, BarChart3, UploadCloud, LogOut, User as UserIcon, Sun, Moon, FileText, AlertTriangle } from 'lucide-react';
 
 export default function App() {
   const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
@@ -74,6 +76,10 @@ export default function App() {
         return <DailyLogs />;
       case 'reports':
         return <Reports />;
+      case 'requirements':
+        return <Requirements />;
+      case 'issues':
+        return <Issues />;
       case 'import':
         return <DataImport />;
       default:
@@ -138,6 +144,22 @@ export default function App() {
           >
             <UploadCloud size={18} />
             Data Import
+          </a>
+          <a
+            href="#"
+            className={`nav-link ${activeTab === 'requirements' ? 'active' : ''}`}
+            onClick={(e) => { e.preventDefault(); setActiveTab('requirements'); }}
+          >
+            <FileText size={18} />
+            Requirements
+          </a>
+          <a
+            href="#"
+            className={`nav-link ${activeTab === 'issues' ? 'active' : ''}`}
+            onClick={(e) => { e.preventDefault(); setActiveTab('issues'); }}
+          >
+            <AlertTriangle size={18} />
+            Issue Tracker
           </a>
         </nav>
 
