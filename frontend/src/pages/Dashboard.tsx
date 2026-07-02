@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api';
-import { FolderGit2, CheckSquare, Clock, BarChart3, AlertCircle, RefreshCw } from 'lucide-react';
+import { FolderGit2, CheckSquare, Clock, BarChart3, AlertCircle, RefreshCw, FileText, AlertTriangle } from 'lucide-react';
 
 interface TestCase {
   id: number;
@@ -30,6 +30,9 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
   const [testCases, setTestCases] = useState<TestCase[]>([]);
   const [tasks, setTasks] = useState<TaskItem[]>([]);
   const [logs, setLogs] = useState<DailyLog[]>([]);
+  const [requirementsCount, setRequirementsCount] = useState(0);
+  const [testItemsCount, setTestItemsCount] = useState(0);
+  const [issuesCount, setIssuesCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -37,14 +40,20 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
     setLoading(true);
     setError(null);
     try {
-      const [tcData, taskData, logData] = await Promise.all([
+      const [tcData, taskData, logData, reqData, issueData, testItemData] = await Promise.all([
         api.get('TestCases'),
         api.get('TaskItems'),
-        api.get('DailyLogs')
+        api.get('DailyLogs'),
+        api.get('Requirements'),
+        api.get('Issues'),
+        api.get('TestItemsTracker')
       ]);
       setTestCases(tcData);
       setTasks(taskData);
       setLogs(logData);
+      setRequirementsCount(reqData.length || 0);
+      setIssuesCount(issueData.length || 0);
+      setTestItemsCount(testItemData.length || 0);
     } catch (err: any) {
       setError(err.message || 'Failed to fetch dashboard data.');
     } finally {
@@ -117,43 +126,43 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
 
       {/* Metrics Row */}
       <div className="metrics-grid">
-        <div className="metric-card cyan" onClick={() => onNavigate('testcases')} style={{ cursor: 'pointer' }}>
+        <div className="metric-card cyan" onClick={() => onNavigate('requirements')} style={{ cursor: 'pointer' }}>
+          <div className="metric-icon">
+            <FileText size={24} />
+          </div>
+          <div className="metric-info">
+            <h3>Requirements</h3>
+            <div className="metric-value">{requirementsCount}</div>
+          </div>
+        </div>
+
+        <div className="metric-card purple" onClick={() => onNavigate('testitems')} style={{ cursor: 'pointer' }}>
           <div className="metric-icon">
             <FolderGit2 size={24} />
           </div>
           <div className="metric-info">
-            <h3>Test Cases</h3>
-            <div className="metric-value">{totalTestCases}</div>
+            <h3>Test Items</h3>
+            <div className="metric-value">{testItemsCount}</div>
           </div>
         </div>
 
-        <div className="metric-card purple" onClick={() => onNavigate('tasks')} style={{ cursor: 'pointer' }}>
+        <div className="metric-card amber" onClick={() => onNavigate('issues')} style={{ cursor: 'pointer' }}>
+          <div className="metric-icon" style={{ backgroundColor: 'rgba(244,63,94,0.1)', color: 'var(--accent-rose)' }}>
+            <AlertTriangle size={24} />
+          </div>
+          <div className="metric-info">
+            <h3>Issues</h3>
+            <div className="metric-value">{issuesCount}</div>
+          </div>
+        </div>
+
+        <div className="metric-card emerald" onClick={() => onNavigate('tasks')} style={{ cursor: 'pointer' }}>
           <div className="metric-icon">
             <CheckSquare size={24} />
           </div>
           <div className="metric-info">
             <h3>Tasks Completed</h3>
-            <div className="metric-value">{completionRate}% <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', fontWeight: 450 }}>({completedTasks}/{totalTasks})</span></div>
-          </div>
-        </div>
-
-        <div className="metric-card emerald" onClick={() => onNavigate('logs')} style={{ cursor: 'pointer' }}>
-          <div className="metric-icon">
-            <Clock size={24} />
-          </div>
-          <div className="metric-info">
-            <h3>Total Effort</h3>
-            <div className="metric-value">{totalHoursSpent} hrs</div>
-          </div>
-        </div>
-
-        <div className="metric-card amber" onClick={() => onNavigate('reports')} style={{ cursor: 'pointer' }}>
-          <div className="metric-icon">
-            <BarChart3 size={24} />
-          </div>
-          <div className="metric-info">
-            <h3>Reports Run</h3>
-            <div className="metric-value">View Reports</div>
+            <div className="metric-value">{completionRate}% <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>({completedTasks}/{totalTasks})</span></div>
           </div>
         </div>
       </div>

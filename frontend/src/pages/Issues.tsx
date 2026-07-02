@@ -30,7 +30,7 @@ export default function Issues() {
   const fetchIssues = async () => {
     try {
       setLoading(true);
-      const data = await api.getIssues();
+      const data = await api.get('Issues');
       setIssues(data);
     } catch (err) {
       console.error('Failed to fetch issues', err);
@@ -77,6 +77,7 @@ export default function Issues() {
                 <th style={{ padding: '1rem', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '0.85rem' }}>ISSUE ID</th>
                 <th style={{ padding: '1rem', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '0.85rem' }}>MODULE</th>
                 <th style={{ padding: '1rem', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '0.85rem' }}>DESCRIPTION</th>
+                <th style={{ padding: '1rem', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '0.85rem' }}>REPORTED BY</th>
                 <th style={{ padding: '1rem', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '0.85rem' }}>SEVERITY</th>
                 <th style={{ padding: '1rem', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '0.85rem' }}>STATUS</th>
                 <th style={{ padding: '1rem', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '0.85rem' }}>OWNER</th>
@@ -100,6 +101,7 @@ export default function Issues() {
                         </div>
                       )}
                     </td>
+                    <td style={{ padding: '1rem', color: 'var(--text-secondary)' }}>{issue.reportedBy}</td>
                     <td style={{ padding: '1rem' }}>
                       <span style={{
                         padding: '0.25rem 0.5rem', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 600,
@@ -130,7 +132,7 @@ export default function Issues() {
               })}
               {issues.length === 0 && (
                 <tr>
-                  <td colSpan={7} style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+                  <td colSpan={8} style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-muted)' }}>
                     <AlertCircle size={32} style={{ margin: '0 auto 1rem', opacity: 0.5 }} />
                     No issues imported yet. Upload an Excel file to see them here.
                   </td>

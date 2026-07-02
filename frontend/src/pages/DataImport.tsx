@@ -7,7 +7,7 @@ export default function DataImport() {
   const [isDragging, setIsDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<{ testCases: number, tasks: number } | null>(null);
+  const [success, setSuccess] = useState<{ testItems: number, requirements: number, issues: number } | null>(null);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -60,8 +60,9 @@ export default function DataImport() {
     try {
       const response = await api.uploadFile('Import/excel', file);
       setSuccess({
-        testCases: response.testCasesAdded || 0,
-        tasks: response.tasksAdded || 0
+        testItems: response.testItemsAdded || 0,
+        requirements: response.requirementsAdded || 0,
+        issues: response.issuesAdded || 0
       });
       setFile(null); // clear after success
     } catch (err: any) {
@@ -94,7 +95,7 @@ export default function DataImport() {
             </div>
             <h2 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '0.5rem' }}>Automated Excel Importer</h2>
             <p style={{ color: 'var(--text-secondary)' }}>
-              The system will scan the "Test Items Tracker" sheet and automatically extract all rows assigned to "Manjunath".
+              The system will scan all sheets — Requirements Tracker, Test Items Tracker, and Issue Tracker — and automatically import all rows.
             </p>
           </div>
 
@@ -162,14 +163,18 @@ export default function DataImport() {
               <h3 style={{ fontSize: '1.25rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.5rem' }}>Import Successful!</h3>
               <p style={{ color: 'var(--text-secondary)', marginBottom: '1rem' }}>The system successfully processed the file and updated the database.</p>
               
-              <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
                 <div style={{ backgroundColor: 'var(--bg-card)', padding: '0.75rem 1.5rem', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
-                  <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--accent-cyan)' }}>{success.testCases}</div>
-                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Test Cases Added</div>
+                  <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--accent-emerald)' }}>{success.requirements}</div>
+                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Requirements</div>
                 </div>
                 <div style={{ backgroundColor: 'var(--bg-card)', padding: '0.75rem 1.5rem', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
-                  <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--accent-purple)' }}>{success.tasks}</div>
-                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Tasks Added</div>
+                  <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--accent-cyan)' }}>{success.testItems}</div>
+                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Test Items</div>
+                </div>
+                <div style={{ backgroundColor: 'var(--bg-card)', padding: '0.75rem 1.5rem', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+                  <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--accent-rose)' }}>{success.issues}</div>
+                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Issues</div>
                 </div>
               </div>
             </div>

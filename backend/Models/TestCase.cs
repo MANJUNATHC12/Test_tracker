@@ -16,6 +16,9 @@ namespace TestingTracker.Api.Models
         public string? Steps { get; set; }
 
         public string? ExpectedResult { get; set; }
+        
+        public string? SubModule { get; set; }
+        public string? TestedBy { get; set; }
 
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
     }

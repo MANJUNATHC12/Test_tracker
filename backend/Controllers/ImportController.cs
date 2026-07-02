@@ -33,8 +33,6 @@ namespace TestingTracker.Api.Controllers
             if (ext != ".xlsx")
                 return BadRequest("Only .xlsx files are supported.");
 
-            int testCasesAdded = 0;
-            int tasksAdded = 0;
 
             try
             {
@@ -140,95 +138,59 @@ namespace TestingTracker.Api.Controllers
                     }
                 }
 
-                // 3. Parse Test Items Tracker (fallback to first sheet if not named exactly)
-                IXLWorksheet testSheet;
-                if (!workbook.TryGetWorksheet("Test Items Tracker", out testSheet))
+                // 3. Parse Test Items Tracker
+                int testItemsAdded = 0;
+                if (workbook.TryGetWorksheet("Test Items Tracker", out var testSheet))
                 {
-                    // Only fallback to first sheet if we didn't find Requirements or Issues either
-                    if (requirementsAdded == 0 && issuesAdded == 0) 
-                    {
-                        testSheet = workbook.Worksheets.FirstOrDefault();
-                    }
-                }
-
-                if (testSheet != null)
-                {
-                    var rows = testSheet.RowsUsed().Skip(1); // skip header
-                    Console.WriteLine($"Found sheet: {testSheet.Name}. Total rows after skipping header: {rows.Count()}");
+                    var rows = testSheet.RowsUsed().Skip(1);
                     foreach (var row in rows)
                     {
-                        var createdDateVal = row.Cell(10).Value;
-                        DateTime createdDate = DateTime.UtcNow;
-                        if (createdDateVal.IsDateTime) createdDate = createdDateVal.GetDateTime();
-                        else if (createdDateVal.IsText && DateTime.TryParse(createdDateVal.GetText(), out var parsedDate)) createdDate = parsedDate;
-                        createdDate = DateTime.SpecifyKind(createdDate, DateTimeKind.Utc);
-
                         var testId = row.Cell(1).GetString().Trim();
+                        if (string.IsNullOrEmpty(testId)) continue;
+
                         var module = row.Cell(2).GetString().Trim();
                         var subMod = row.Cell(3).GetString().Trim();
                         var issue = row.Cell(4).GetString().Trim();
                         var desc = row.Cell(5).GetString().Trim();
+                        var testedBy = row.Cell(6).GetString().Trim();
                         var priority = row.Cell(7).GetString().Trim();
                         if (string.IsNullOrEmpty(priority)) priority = "Medium";
                         var status = row.Cell(8).GetString().Trim();
                         if (string.IsNullOrEmpty(status)) status = "Open";
                         var owner = row.Cell(9).GetString().Trim();
 
+                        var createdDateVal = row.Cell(10).Value;
+                        DateTime createdDate = DateTime.UtcNow;
+                        if (createdDateVal.IsDateTime) createdDate = createdDateVal.GetDateTime();
+                        createdDate = DateTime.SpecifyKind(createdDate, DateTimeKind.Utc);
+
                         var targetDateVal = row.Cell(11).Value;
                         DateTime? targetDate = null;
                         if (targetDateVal.IsDateTime) targetDate = DateTime.SpecifyKind(targetDateVal.GetDateTime(), DateTimeKind.Utc);
 
-                        var feature = string.IsNullOrEmpty(subMod) ? module : subMod;
-                        var title = $"[{testId}] {module} - {feature}";
-                        if (title.Length > 200) title = title.Substring(0, 197) + "...";
+                        var actualDateVal = row.Cell(12).Value;
+                        DateTime? actualDate = null;
+                        if (actualDateVal.IsDateTime) actualDate = DateTime.SpecifyKind(actualDateVal.GetDateTime(), DateTimeKind.Utc);
 
-                        // Avoid duplicates
-                        bool exists = _context.TestCases.Any(tc => tc.Title == title && tc.CreatedDate.Date == createdDate.Date);
-                        if (exists)
+                        var issueId = row.Cell(13).GetString().Trim();
+                        var remarks = row.Cell(14).GetString().Trim();
+
+                        bool exists = _context.TestItems.Any(t => t.TestId == testId);
+                        if (exists) continue;
+
+                        _context.TestItems.Add(new TestItem
                         {
-                            Console.WriteLine($"Skipped duplicate: {title}");
-                            continue;
-                        }
-
-                        Console.WriteLine($"Adding test case: {title}");
-                        var fullDesc = $"Priority: {priority} | Status: {status} | Tested by: {row.Cell(6).GetString().Trim()} | Owner: {owner}";
-                        if (!string.IsNullOrEmpty(issue)) fullDesc = $"Issue: {issue} | " + fullDesc;
-                        if (!string.IsNullOrEmpty(desc)) fullDesc += $"\nDetails: {desc}";
-
-                        var steps = $"1. Navigate to {module}\n2. Verify: {(string.IsNullOrEmpty(issue) ? "functional testing" : issue)}";
-                        var expected = string.IsNullOrEmpty(desc) ? $"{feature} functions per specification" : $"Feature works correctly. Bug: {desc}";
-
-                        var tc = new TestCase
-                        {
-                            Title = title,
-                            Description = fullDesc,
-                            Steps = steps,
-                            ExpectedResult = expected,
-                            CreatedDate = createdDate
-                        };
-                        _context.TestCases.Add(tc);
-                        testCasesAdded++;
-
-                        var taskTitle = $"[{testId}] {feature}";
-                        if (taskTitle.Length > 200) taskTitle = taskTitle.Substring(0, 197) + "...";
-                        
-                        var isCompleted = status.ToLower() == "closed" || status.ToLower() == "fixed" || status.ToLower() == "completed" || status.ToLower() == "done";
-
-                        var task = new TaskItem
-                        {
-                            Title = taskTitle,
-                            Description = $"Module: {module} | {(string.IsNullOrEmpty(issue) ? desc : issue)}",
-                            IsCompleted = isCompleted,
-                            CreatedDate = createdDate,
-                            DueDate = targetDate ?? createdDate.AddDays(2)
-                        };
-                        _context.Tasks.Add(task);
-                        tasksAdded++;
+                            TestId = testId, Module = module, SubModule = subMod, Issue = issue,
+                            Description = desc, TestedBy = testedBy, Priority = priority, Status = status,
+                            Owner = owner, CreatedDate = createdDate, TargetDate = targetDate,
+                            ActualCompletion = actualDate, IssueId = issueId, Remarks = remarks
+                        });
+                        testItemsAdded++;
                     }
                 }
 
                 // Create a daily log entry for today if we imported anything
-                int totalImported = testCasesAdded + requirementsAdded + issuesAdded;
+                int totalImported = testItemsAdded + requirementsAdded + issuesAdded;
                 if (totalImported > 0)
                 {
                     var today = DateTime.UtcNow.Date;
@@ -238,7 +200,7 @@ namespace TestingTracker.Api.Controllers
                     var existingLog = _context.DailyLogs.FirstOrDefault(l => l.Date.Date == today);
                     if (existingLog != null)
                     {
-                        existingLog.Description = $"Imported {testCasesAdded} test items, {requirementsAdded} requirements, and {issuesAdded} issues via file upload.";
+                        existingLog.Description = $"Imported {testItemsAdded} test items, {requirementsAdded} requirements, and {issuesAdded} issues via file upload.";
                         existingLog.HoursSpent = hours;
                     }
                     else
@@ -246,7 +208,7 @@ namespace TestingTracker.Api.Controllers
                         _context.DailyLogs.Add(new DailyLog
                         {
                             Date = DateTime.UtcNow,
-                            Description = $"Imported {testCasesAdded} test items, {requirementsAdded} requirements, and {issuesAdded} issues via file upload.",
+                            Description = $"Imported {testItemsAdded} test items, {requirementsAdded} requirements, and {issuesAdded} issues via file upload.",
                             HoursSpent = hours
                         });
                     }
@@ -257,10 +219,9 @@ namespace TestingTracker.Api.Controllers
                 return Ok(new
                 {
                     message = "File processed successfully",
-                    testCasesAdded = testCasesAdded,
+                    testItemsAdded = testItemsAdded,
                     requirementsAdded = requirementsAdded,
-                    issuesAdded = issuesAdded,
-                    tasksAdded = tasksAdded
+                    issuesAdded = issuesAdded
                 });
             }
             catch (Exception ex)

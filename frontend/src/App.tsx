@@ -8,6 +8,7 @@ import Reports from './pages/Reports';
 import DataImport from './pages/DataImport';
 import Requirements from './pages/Requirements';
 import Issues from './pages/Issues';
+import TestItemsTracker from './pages/TestItemsTracker';
 import { LayoutDashboard, FolderGit2, CheckSquare, Clock, BarChart3, UploadCloud, LogOut, User as UserIcon, Sun, Moon, FileText, AlertTriangle } from 'lucide-react';
 
 export default function App() {
@@ -78,6 +79,8 @@ export default function App() {
         return <Reports />;
       case 'requirements':
         return <Requirements />;
+      case 'testitems':
+        return <TestItemsTracker />;
       case 'issues':
         return <Issues />;
       case 'import':
@@ -107,11 +110,11 @@ export default function App() {
           </a>
           <a
             href="#"
-            className={`nav-link ${activeTab === 'testcases' ? 'active' : ''}`}
-            onClick={(e) => { e.preventDefault(); setActiveTab('testcases'); }}
+            className={`nav-link ${activeTab === 'testitems' ? 'active' : ''}`}
+            onClick={(e) => { e.preventDefault(); setActiveTab('testitems'); }}
           >
             <FolderGit2 size={18} />
-            Test Cases
+            Test Items Tracker
           </a>
           <a
             href="#"

@@ -28,7 +28,7 @@ export default function Requirements() {
   const fetchRequirements = async () => {
     try {
       setLoading(true);
-      const data = await api.getRequirements();
+      const data = await api.get('Requirements');
       setRequirements(data);
     } catch (err) {
       console.error('Failed to fetch requirements', err);
@@ -67,6 +67,7 @@ export default function Requirements() {
                 <th style={{ padding: '1rem', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '0.85rem' }}>REQ ID</th>
                 <th style={{ padding: '1rem', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '0.85rem' }}>MODULE</th>
                 <th style={{ padding: '1rem', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '0.85rem' }}>DESCRIPTION</th>
+                <th style={{ padding: '1rem', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '0.85rem' }}>REQUESTOR</th>
                 <th style={{ padding: '1rem', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '0.85rem' }}>PRIORITY</th>
                 <th style={{ padding: '1rem', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '0.85rem' }}>STATUS</th>
                 <th style={{ padding: '1rem', color: 'var(--text-secondary)', fontWeight: 600, fontSize: '0.85rem' }}>OWNER</th>
@@ -82,6 +83,7 @@ export default function Requirements() {
                       {req.description}
                     </div>
                   </td>
+                  <td style={{ padding: '1rem', color: 'var(--text-secondary)' }}>{req.requestor}</td>
                   <td style={{ padding: '1rem' }}>
                     <span style={{
                       padding: '0.25rem 0.5rem', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 600,
@@ -102,7 +104,7 @@ export default function Requirements() {
               ))}
               {requirements.length === 0 && (
                 <tr>
-                  <td colSpan={6} style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+                  <td colSpan={7} style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-muted)' }}>
                     <AlertCircle size={32} style={{ margin: '0 auto 1rem', opacity: 0.5 }} />
                     No requirements imported yet. Upload an Excel file to see them here.
                   </td>
